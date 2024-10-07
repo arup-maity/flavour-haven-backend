@@ -26,7 +26,7 @@ authRouting.get('/verify-token', async (req, res) => {
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { [key: string]: any }
       if (decoded?.purpose !== 'login') res.status(409).json({ success: false, login: false, message: 'this token not for login purpose' })
 
-      res.status(200).send({ success: false, login: true, decoded })
+      res.status(200).send({ success: true, login: true, decoded })
    } catch (error) {
       console.error(error)
       res.status(500).send({ success: false, message: "Failed to authenticate token" })
