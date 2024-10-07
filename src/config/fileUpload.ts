@@ -1,4 +1,4 @@
-import { S3Client } from '@aws-sdk/client-s3'
+import { S3Client, DeleteObjectsCommand } from '@aws-sdk/client-s3'
 import multer from 'multer'
 import multerS3 from 'multer-s3'
 import path from 'path'
@@ -12,7 +12,7 @@ const s3 = new S3Client({
    region: 'us-east-005',
 });
 
-function sanitizeFile(file: any, cb: any) {
+function sanitizeFileImage(file: any, cb: any) {
    // Define the allowed extension
    const fileExts = ['.png', '.jpg', '.jpeg', '.gif'];
    // Check allowed extensions
@@ -41,9 +41,41 @@ const taxonomyStorage = multerS3({
 export const taxonomyUpload = multer({
    storage: taxonomyStorage,
    fileFilter: (req, file, cb) => {
-      sanitizeFile(file, cb);
+      sanitizeFileImage(file, cb);
    },
    limits: {
       fileSize: 1000000, // max file size 1MB = 1000000 bytes
    },
 });
+
+export async function deleteFilesFromStore(files: string[]): Promise<{ success: boolean, delete?: any } | boolean> {
+   // Check if the array is empty
+   if (files.length === 0) {
+      console.log('No files to delete');
+      return true;
+   }
+
+   // Helper function to format the S3 object keys
+   const getKeys = (files: string[]) => {
+      return files.map(file => ({ Key: file }));
+   };
+
+   // Define parameters for DeleteObjectsCommand
+   const params = {
+      Bucket: 'coolify-database-backup',  // Change it as per your project requirement
+      Delete: {
+         Objects: getKeys(files),          // Call helper function to get object keys
+      },
+   };
+
+   try {
+      const command = new DeleteObjectsCommand(params);
+      const data = await s3.send(command);
+      console.log('Success. The deleted objects are: ', data.Deleted);
+
+      return { success: true, delete: data.Deleted };
+   } catch (err) {
+      console.log('Error', err);
+      return false;
+   }
+}

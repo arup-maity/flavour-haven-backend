@@ -11,7 +11,9 @@ const body_parser_1 = __importDefault(require("body-parser"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const http_1 = __importDefault(require("http"));
 const socket_io_1 = require("socket.io");
+const auth_controllers_1 = __importDefault(require("./controllers/auth-controllers"));
 const adminUser_1 = __importDefault(require("./controllers/user-controllers/adminUser"));
+const adminTaxonomy_1 = __importDefault(require("./controllers/taxonomy-controllers/adminTaxonomy"));
 // const { Server } = require("socket.io");
 const app = (0, express_1.default)();
 dotenv_1.default.config();
@@ -31,8 +33,9 @@ const server = http_1.default.createServer(app);
 app.get('/', (req, res) => {
     res.send('Hello World!');
 });
-// app.use('/auth', authRouting)
+app.use('/api/auth', auth_controllers_1.default);
 app.use('/api/admin/user', adminUser_1.default);
+app.use('/api/admin/taxonomy', adminTaxonomy_1.default);
 const io = new socket_io_1.Server(server, {
     cors: {
         origin: "*",

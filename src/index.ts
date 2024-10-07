@@ -9,6 +9,7 @@ import { Server } from 'socket.io'
 import authRouting from "./controllers/auth-controllers"
 import adminUserRouting from "./controllers/user-controllers/adminUser"
 import adminTaxonomyRouting from "./controllers/taxonomy-controllers/adminTaxonomy"
+import adminDishesRouting from "./controllers/dishes-controllers/adminDishes"
 // const { Server } = require("socket.io");
 
 
@@ -37,6 +38,7 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRouting)
 app.use('/api/admin/user', adminUserRouting)
 app.use('/api/admin/taxonomy', adminTaxonomyRouting)
+app.use('/api/admin/dishes', adminDishesRouting)
 
 const io = new Server(server, {
    cors: {

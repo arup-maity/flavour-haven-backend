@@ -12,11 +12,12 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-const bcrypt_1 = __importDefault(require("bcrypt"));
-const prisma_1 = __importDefault(require("../../config/prisma"));
 const express_1 = require("express");
+const bcrypt_1 = __importDefault(require("bcrypt"));
+const prisma_1 = __importDefault(require("@/config/prisma"));
+const middleware_1 = require("@/middleware");
 const adminUserRouting = (0, express_1.Router)();
-adminUserRouting.post('/create-user', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+adminUserRouting.post('/create-user', (0, middleware_1.adminAuthentication)(), (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const body = req.body;
         const findUser = yield prisma_1.default.users.findUnique({
