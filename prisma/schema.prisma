@@ -140,7 +140,7 @@ model Order {
    cuid          String          @unique @default(cuid())
    userId        Int
    user          Users           @relation(fields: [userId], references: [id])
-   totalAmount   Int?
+   totalAmount   Int            @default(0)
    status        OrderStatus     @default(pending)
    paymentMethod PaymentDetails?
    orderItems    OrderItems[]

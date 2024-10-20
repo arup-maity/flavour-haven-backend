@@ -14,6 +14,11 @@ const socket_io_1 = require("socket.io");
 const auth_controllers_1 = __importDefault(require("./controllers/auth-controllers"));
 const adminUser_1 = __importDefault(require("./controllers/user-controllers/adminUser"));
 const adminTaxonomy_1 = __importDefault(require("./controllers/taxonomy-controllers/adminTaxonomy"));
+const adminDishes_1 = __importDefault(require("./controllers/dishes-controllers/adminDishes"));
+const publicDishes_1 = __importDefault(require("./controllers/dishes-controllers/publicDishes"));
+const taxonomy_1 = __importDefault(require("./controllers/taxonomy-controllers/taxonomy"));
+const checkout_1 = __importDefault(require("./controllers/checkout-controllers/checkout"));
+const demo_controller_1 = __importDefault(require("./controllers/demo-controller"));
 // const { Server } = require("socket.io");
 const app = (0, express_1.default)();
 dotenv_1.default.config();
@@ -36,6 +41,12 @@ app.get('/', (req, res) => {
 app.use('/api/auth', auth_controllers_1.default);
 app.use('/api/admin/user', adminUser_1.default);
 app.use('/api/admin/taxonomy', adminTaxonomy_1.default);
+app.use('/api/taxonomy', taxonomy_1.default);
+app.use('/api/admin/dishes', adminDishes_1.default);
+app.use('/api/dishes', publicDishes_1.default);
+app.use("/api/checkout", checkout_1.default);
+// demo
+app.use("/api/demo", demo_controller_1.default);
 const io = new socket_io_1.Server(server, {
     cors: {
         origin: "*",

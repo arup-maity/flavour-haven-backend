@@ -10,6 +10,10 @@ import authRouting from "./controllers/auth-controllers"
 import adminUserRouting from "./controllers/user-controllers/adminUser"
 import adminTaxonomyRouting from "./controllers/taxonomy-controllers/adminTaxonomy"
 import adminDishesRouting from "./controllers/dishes-controllers/adminDishes"
+import publicDishesRouting from "./controllers/dishes-controllers/publicDishes"
+import publicTaxonomyRouting from "./controllers/taxonomy-controllers/taxonomy"
+import checkoutRouting from "./controllers/checkout-controllers/checkout"
+import demoRouting from "./controllers/demo-controller"
 // const { Server } = require("socket.io");
 
 
@@ -38,7 +42,13 @@ app.get('/', (req, res) => {
 app.use('/api/auth', authRouting)
 app.use('/api/admin/user', adminUserRouting)
 app.use('/api/admin/taxonomy', adminTaxonomyRouting)
+app.use('/api/taxonomy', publicTaxonomyRouting)
 app.use('/api/admin/dishes', adminDishesRouting)
+app.use('/api/dishes', publicDishesRouting)
+app.use("/api/checkout", checkoutRouting)
+
+// demo
+app.use("/api/demo", demoRouting)
 
 const io = new Server(server, {
    cors: {

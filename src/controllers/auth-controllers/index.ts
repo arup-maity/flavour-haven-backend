@@ -4,31 +4,40 @@ import prisma from '@/config/prisma';
 import { validateData } from '@/utils';
 import { adminLogin } from '@/validation/adminUserValidation';
 import jwt from 'jsonwebtoken'
+import { TokenType } from '@/type';
 
 const authRouting = Router()
-authRouting.get('/verify-token', async (req, res) => {
+
+export function cookieParams() {
+   return {
+      maxAge: 24 * 60 * 60 * 1000, // 24 hours
+      httpOnly: false,
+      secure: true,
+      sameSite: 'strict',
+      domain: process.env.ENVIRONMENT === 'production' ? '.arupmaity.in' : 'localhost',
+   };
+}
+authRouting.get('/verify-token', async (req: Request, res: Response) => {
    try {
-      const cookie_token = req.cookies.token
-      function getToken() {
-         const authorization = req.headers['authorization']
-         if (!authorization || !authorization.startsWith('Bearer ')) {
-            return res.status(409).send({ login: false, message: 'token not found' })
-         } else {
-            return authorization.split(' ')[1]
+      const cookieToken = req.cookies.token;
+
+      const getToken = () => {
+         const authorization = req.headers['authorization'];
+         if (authorization && authorization.startsWith('Bearer ')) {
+            return authorization.split(' ')[1];
          }
-      }
+         return null;
+      };
 
-      const token = cookie_token || getToken() as string
-      if (!token) {
-         res.status(409).send({ success: false, message: "No token provided" })
-      }
+      const token = cookieToken || getToken();
+      if (!token) res.status(401).send({ success: false, message: "No token provided" });
 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as { [key: string]: any }
-      if (decoded?.purpose !== 'login') res.status(409).json({ success: false, login: false, message: 'this token not for login purpose' })
+      const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as TokenType
+      if (decoded?.purpose !== 'login') res.status(401).json({ success: false, login: false, message: 'This token is not for login purposes' });
 
-      res.status(200).send({ success: true, login: true, decoded })
+      res.status(200).send({ success: true, login: true, decoded });
    } catch (error) {
-      console.error(error)
+      // console.error(error)
       res.status(500).send({ success: false, message: "Failed to authenticate token" })
    }
 })
@@ -53,16 +62,15 @@ authRouting.post('/admin-login', validateData(adminLogin), async (req: Request, 
          role: findUser?.role,
          accessPurpose: 'admin',
          purpose: 'login',
-         exp: Math.floor(Date.now() / 1000) + 60 * 60 * 6,
       }
       // generate the token
-      const token = jwt.sign(payload, process.env.JWT_SECRET as string)
+      const token = jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '1d' })
       res.cookie('token', token, {
          domain: process.env.ENVIRONMENT === 'production' ? '.arupmaity.in' : 'localhost',
          path: '/',
          secure: true,
          httpOnly: false,
-         maxAge: 30 * 24 * 60 * 60,
+         maxAge: 30 * 24 * 60 * 60 * 1000,
       })
       //  return response
       res.status(200).send({ success: true, message: 'Login successfull' })
@@ -72,4 +80,74 @@ authRouting.post('/admin-login', validateData(adminLogin), async (req: Request, 
    }
 })
 
+authRouting.post("/user-register", async (req: Request, res: Response) => {
+   try {
+      const body = req.body;
+      // Check if user already exists
+      const checkUser = await prisma.users.findUnique({
+         where: { email: body.email }
+      });
+      if (checkUser) res.status(409).json({ success: false, message: "User already exists" });
+
+      // Hash the password
+      const hashPassword = bcrypt.hashSync(body.password, 10); // Consider using a higher value for production
+
+      // Create the new user
+      const newUser = await prisma.users.create({
+         data: {
+            firstName: body.firstName,
+            lastName: body.lastName,
+            email: body.email,
+            role: 'user',
+            isActive: true,
+            userAuth: {
+               create: {
+                  method: "password",
+                  password: hashPassword
+               }
+            }
+         }
+      });
+
+      res.status(201).json({ success: true, user: newUser, message: 'Account created successfully' });
+   } catch (error) {
+      console.error(error); // Log error for debugging
+      res.status(500).send({ success: false, message: "Internal server error" });
+   }
+});
+authRouting.post("/user-login", async (req, res) => {
+   try {
+      const body = req.body
+      const findUser = await prisma.users.findUnique({
+         where: { email: body.email },
+         include: {
+            userAuth: true
+         }
+      })
+      if (!findUser) res.status(409).json({ success: false, message: "User not found" })
+      const checkPassword = bcrypt.compareSync(body?.password, findUser?.userAuth?.password as string)
+      if (!checkPassword) res.status(409).json({ success: false, message: "Not match username and password" })
+      const payload = {
+         id: findUser?.id,
+         name: findUser?.firstName ? findUser?.firstName + " " + findUser?.lastName : '',
+         role: findUser?.role,
+         accessPurpose: 'user',
+         purpose: 'login',
+      }
+      // generate the token
+      const token = jwt.sign(payload, process.env.JWT_SECRET!, { expiresIn: '1d' })
+      res.cookie('token', token, {
+         domain: process.env.ENVIRONMENT === 'production' ? '.arupmaity.in' : 'localhost',
+         path: '/',
+         secure: true,
+         httpOnly: false,
+         maxAge: 30 * 24 * 60 * 60 * 1000,
+      })
+      res.status(200).json({ success: true, message: 'Login successful' })
+   } catch (error) {
+      console.log(error)
+      res.status(500).send({ success: false, error })
+
+   }
+})
 export default authRouting

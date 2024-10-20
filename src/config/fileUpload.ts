@@ -48,6 +48,28 @@ export const taxonomyUpload = multer({
    },
 });
 
+// Taxonomy File Uploader
+const dishesStorage = multerS3({
+   s3: s3, // s3 instance
+   bucket: 'coolify-database-backup', // change it as per your project requirement
+   acl: 'public-read', // storage access type
+   key: (req, file, cb) => {
+      const folder = 'restaurent/dishes';
+      const originalname = file.originalname;
+      const fullPath = `${folder}/${originalname}`;
+      cb(null, fullPath);
+   },
+});
+export const dishesUpload = multer({
+   storage: dishesStorage,
+   fileFilter: (req, file, cb) => {
+      sanitizeFileImage(file, cb);
+   },
+   limits: {
+      fileSize: 1000000, // max file size 1MB = 1000000 bytes
+   },
+});
+
 export async function deleteFilesFromStore(files: string[]): Promise<{ success: boolean, delete?: any } | boolean> {
    // Check if the array is empty
    if (files.length === 0) {

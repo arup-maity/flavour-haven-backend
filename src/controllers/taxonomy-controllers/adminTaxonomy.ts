@@ -18,15 +18,15 @@ adminTaxonomyRouting.post('/create-taxonomy', async (req: Request, res: Response
       const checkSlug = await prisma.taxonomy.findUnique({
          where: { slug: body.slug }
       })
-      if (checkSlug) return res.status(409).json({ success: false, message: "Slug already exists" })
+      if (checkSlug) res.status(409).json({ success: false, message: "Slug already exists" })
       const newTaxonomy = await prisma.taxonomy.create({
          data: body
       })
-      if (!newTaxonomy) return res.status(409).json({ success: false, message: "Unsccessfull" })
-      return res.status(200).json({ success: true, message: 'Created successfully' })
+      if (!newTaxonomy) res.status(409).json({ success: false, message: "Unsccessfull" })
+      res.status(200).json({ success: true, message: 'Created successfully' })
    } catch (error) {
       console.error(error)
-      return res.status(500).json({ success: false, message: 'Failed to create taxonomy' })
+      res.status(500).json({ success: false, message: 'Failed to create taxonomy' })
    }
 })
 adminTaxonomyRouting.put('/update-taxonomy/:id', async (req, res) => {
@@ -39,19 +39,19 @@ adminTaxonomyRouting.put('/update-taxonomy/:id', async (req, res) => {
             NOT: { id: +id }
          }
       })
-      if (checkSlug) return res.status(409).json({ success: false, message: "Slug already exists" })
+      if (checkSlug) res.status(409).json({ success: false, message: "Slug already exists" })
       const updatedTaxonomy = await prisma.taxonomy.update({
          where: { id: +id },
          data: rest
       })
-      if (!updatedTaxonomy) return res.status(409).json({ success: false, message: "Not updated" })
+      if (!updatedTaxonomy) res.status(409).json({ success: false, message: "Not updated" })
       if (oldThumbnail !== rest?.thumbnail) {
          // await deleteFile('restaurant', oldThumbnail)
       }
-      return res.status(200).json({ success: true, message: 'Updated successfully' })
+      res.status(200).json({ success: true, message: 'Updated successfully' })
    } catch (error) {
       console.error(error)
-      return res.status(500).json({ success: false, message: 'Failed to update taxonomy' })
+      res.status(500).json({ success: false, message: 'Failed to update taxonomy' })
    }
 })
 adminTaxonomyRouting.get('/read-taxonomy/:id', async (req, res) => {
@@ -60,10 +60,10 @@ adminTaxonomyRouting.get('/read-taxonomy/:id', async (req, res) => {
       const taxonomy = await prisma.taxonomy.findUnique({
          where: { id: +id }
       })
-      if (!taxonomy) return res.status(404).json({ success: false, message: 'Taxonomy not found' })
-      return res.status(200).json({ success: true, taxonomy })
+      if (!taxonomy) res.status(404).json({ success: false, message: 'Taxonomy not found' })
+      res.status(200).json({ success: true, taxonomy })
    } catch (error) {
-      return res.status(500).json({ success: false, message: 'Something wrong', error })
+      res.status(500).json({ success: false, message: 'Something wrong', error })
    }
 })
 adminTaxonomyRouting.delete("/delete-taxonomy/:id", async (req, res) => {
@@ -73,17 +73,26 @@ adminTaxonomyRouting.delete("/delete-taxonomy/:id", async (req, res) => {
       const deletedTaxonomy = await prisma.taxonomy.delete({
          where: { id: +id }
       })
-      if (!deletedTaxonomy) return res.status(409).send({ success: false, message: "Delete not successfully" })
+      if (!deletedTaxonomy) res.status(409).send({ success: false, message: "Delete not successfully" })
       const fileList = [`${thumbnail}`]
       // await deleteFilesFromStore(fileList)
 
-      return res.status(200).send({ success: true, message: 'Deleted successfully' })
+      res.status(200).send({ success: true, message: 'Deleted successfully' })
    } catch (error) {
       console.error(error)
-      return res.status(500).send({ success: false, message: 'Failed to delete taxonomy' })
+      res.status(500).send({ success: false, message: 'Failed to delete taxonomy' })
    }
 })
-adminTaxonomyRouting.get('/all-taxonomies', async (req, res) => {
+
+interface ManagementsListQuery {
+   page?: string;      // Query parameters are typically strings
+   limit?: string;     // Using strings for query parameters
+   search?: string;
+   role?: string;
+   column?: string;
+   sortOrder?: 'asc' | 'desc'; // Specify possible sort orders
+}
+adminTaxonomyRouting.get('/all-taxonomies', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response) => {
    try {
       const { search, column = 'createdAt', sortOrder = 'desc', page = 1, limit = 15 } = req.query
       const conditions: any = {}
@@ -105,9 +114,9 @@ adminTaxonomyRouting.get('/all-taxonomies', async (req, res) => {
          ...query
       })
       const count = await prisma.taxonomy.count({ where: conditions, })
-      return res.status(200).send({ success: true, taxonomies, total: count })
+      res.status(200).send({ success: true, taxonomies, total: count })
    } catch (error) {
-      return res.status(500).send({ success: false, error })
+      res.status(500).send({ success: false, error })
    }
 })
 adminTaxonomyRouting.get('/dishes-category', async (req, res) => {
@@ -121,9 +130,9 @@ adminTaxonomyRouting.get('/dishes-category', async (req, res) => {
             name: true
          }
       })
-      return res.status(200).json({ success: true, categories })
+      res.status(200).json({ success: true, categories })
    } catch (error) {
-      return res.status(500).json({ success: false, error })
+      res.status(500).json({ success: false, error })
    }
 })
 adminTaxonomyRouting.post('/thumbnail-upload', adminAuthentication(), taxonomyUpload.single('image'), async (req, res) => {

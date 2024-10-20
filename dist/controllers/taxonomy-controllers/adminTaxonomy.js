@@ -24,9 +24,9 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const express_1 = require("express");
-const prisma_1 = __importDefault(require("@/config/prisma"));
-const middleware_1 = require("@/middleware");
-const fileUpload_1 = require("@/config/fileUpload");
+const prisma_1 = __importDefault(require("../../config/prisma"));
+const middleware_1 = require("../../middleware");
+const fileUpload_1 = require("../../config/fileUpload");
 const adminTaxonomyRouting = (0, express_1.Router)();
 adminTaxonomyRouting.use((0, middleware_1.adminAuthentication)());
 adminTaxonomyRouting.post('/create-taxonomy', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -36,17 +36,17 @@ adminTaxonomyRouting.post('/create-taxonomy', (req, res) => __awaiter(void 0, vo
             where: { slug: body.slug }
         });
         if (checkSlug)
-            return res.status(409).json({ success: false, message: "Slug already exists" });
+            res.status(409).json({ success: false, message: "Slug already exists" });
         const newTaxonomy = yield prisma_1.default.taxonomy.create({
             data: body
         });
         if (!newTaxonomy)
-            return res.status(409).json({ success: false, message: "Unsccessfull" });
-        return res.status(200).json({ success: true, message: 'Created successfully' });
+            res.status(409).json({ success: false, message: "Unsccessfull" });
+        res.status(200).json({ success: true, message: 'Created successfully' });
     }
     catch (error) {
         console.error(error);
-        return res.status(500).json({ success: false, message: 'Failed to create taxonomy' });
+        res.status(500).json({ success: false, message: 'Failed to create taxonomy' });
     }
 }));
 adminTaxonomyRouting.put('/update-taxonomy/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -60,21 +60,21 @@ adminTaxonomyRouting.put('/update-taxonomy/:id', (req, res) => __awaiter(void 0,
             }
         });
         if (checkSlug)
-            return res.status(409).json({ success: false, message: "Slug already exists" });
+            res.status(409).json({ success: false, message: "Slug already exists" });
         const updatedTaxonomy = yield prisma_1.default.taxonomy.update({
             where: { id: +id },
             data: rest
         });
         if (!updatedTaxonomy)
-            return res.status(409).json({ success: false, message: "Not updated" });
+            res.status(409).json({ success: false, message: "Not updated" });
         if (oldThumbnail !== (rest === null || rest === void 0 ? void 0 : rest.thumbnail)) {
             // await deleteFile('restaurant', oldThumbnail)
         }
-        return res.status(200).json({ success: true, message: 'Updated successfully' });
+        res.status(200).json({ success: true, message: 'Updated successfully' });
     }
     catch (error) {
         console.error(error);
-        return res.status(500).json({ success: false, message: 'Failed to update taxonomy' });
+        res.status(500).json({ success: false, message: 'Failed to update taxonomy' });
     }
 }));
 adminTaxonomyRouting.get('/read-taxonomy/:id', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -84,11 +84,11 @@ adminTaxonomyRouting.get('/read-taxonomy/:id', (req, res) => __awaiter(void 0, v
             where: { id: +id }
         });
         if (!taxonomy)
-            return res.status(404).json({ success: false, message: 'Taxonomy not found' });
-        return res.status(200).json({ success: true, taxonomy });
+            res.status(404).json({ success: false, message: 'Taxonomy not found' });
+        res.status(200).json({ success: true, taxonomy });
     }
     catch (error) {
-        return res.status(500).json({ success: false, message: 'Something wrong', error });
+        res.status(500).json({ success: false, message: 'Something wrong', error });
     }
 }));
 adminTaxonomyRouting.delete("/delete-taxonomy/:id", (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -99,14 +99,14 @@ adminTaxonomyRouting.delete("/delete-taxonomy/:id", (req, res) => __awaiter(void
             where: { id: +id }
         });
         if (!deletedTaxonomy)
-            return res.status(409).send({ success: false, message: "Delete not successfully" });
+            res.status(409).send({ success: false, message: "Delete not successfully" });
         const fileList = [`${thumbnail}`];
         // await deleteFilesFromStore(fileList)
-        return res.status(200).send({ success: true, message: 'Deleted successfully' });
+        res.status(200).send({ success: true, message: 'Deleted successfully' });
     }
     catch (error) {
         console.error(error);
-        return res.status(500).send({ success: false, message: 'Failed to delete taxonomy' });
+        res.status(500).send({ success: false, message: 'Failed to delete taxonomy' });
     }
 }));
 adminTaxonomyRouting.get('/all-taxonomies', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -114,7 +114,7 @@ adminTaxonomyRouting.get('/all-taxonomies', (req, res) => __awaiter(void 0, void
         const { search, column = 'createdAt', sortOrder = 'desc', page = 1, limit = 15 } = req.query;
         const conditions = {};
         if (search) {
-            conditions.cityName = {
+            conditions.name = {
                 contains: search,
                 mode: "insensitive"
             };
@@ -124,11 +124,28 @@ adminTaxonomyRouting.get('/all-taxonomies', (req, res) => __awaiter(void 0, void
             query.orderBy = { [column]: sortOrder };
         }
         const taxonomies = yield prisma_1.default.taxonomy.findMany(Object.assign({ where: conditions, take: +limit, skip: (+page - 1) * +limit }, query));
-        const count = yield prisma_1.default.taxonomy.count();
+        const count = yield prisma_1.default.taxonomy.count({ where: conditions, });
         res.status(200).send({ success: true, taxonomies, total: count });
     }
     catch (error) {
         res.status(500).send({ success: false, error });
+    }
+}));
+adminTaxonomyRouting.get('/dishes-category', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const categories = yield prisma_1.default.taxonomy.findMany({
+            where: {
+                type: 'category'
+            },
+            select: {
+                id: true,
+                name: true
+            }
+        });
+        res.status(200).json({ success: true, categories });
+    }
+    catch (error) {
+        res.status(500).json({ success: false, error });
     }
 }));
 adminTaxonomyRouting.post('/thumbnail-upload', (0, middleware_1.adminAuthentication)(), fileUpload_1.taxonomyUpload.single('image'), (req, res) => __awaiter(void 0, void 0, void 0, function* () {

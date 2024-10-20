@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.taxonomyUpload = void 0;
+exports.dishesUpload = exports.taxonomyUpload = void 0;
 exports.deleteFilesFromStore = deleteFilesFromStore;
 const client_s3_1 = require("@aws-sdk/client-s3");
 const multer_1 = __importDefault(require("multer"));
@@ -53,6 +53,27 @@ const taxonomyStorage = (0, multer_s3_1.default)({
 });
 exports.taxonomyUpload = (0, multer_1.default)({
     storage: taxonomyStorage,
+    fileFilter: (req, file, cb) => {
+        sanitizeFileImage(file, cb);
+    },
+    limits: {
+        fileSize: 1000000, // max file size 1MB = 1000000 bytes
+    },
+});
+// Taxonomy File Uploader
+const dishesStorage = (0, multer_s3_1.default)({
+    s3: s3, // s3 instance
+    bucket: 'coolify-database-backup', // change it as per your project requirement
+    acl: 'public-read', // storage access type
+    key: (req, file, cb) => {
+        const folder = 'restaurent/dishes';
+        const originalname = file.originalname;
+        const fullPath = `${folder}/${originalname}`;
+        cb(null, fullPath);
+    },
+});
+exports.dishesUpload = (0, multer_1.default)({
+    storage: dishesStorage,
     fileFilter: (req, file, cb) => {
         sanitizeFileImage(file, cb);
     },
