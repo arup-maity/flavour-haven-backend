@@ -9,19 +9,20 @@ const stripe = new Stripe(process.env.STRIPE_SK as string)
 const checkoutRouting = Router()
 
 
-// Define an interface for the items in the checkout body
+
+// Define an interface for each item in the checkout
 interface CheckoutItem {
-   dishId: number;   // Assuming dishId is a number
-   quantity: number; // Assuming quantity is a number
-   price: number;    // Assuming price is a number
+   dishId: number;
+   quantity: number;
+   price: number;
 }
 
 // Define an interface for the request body
 interface CreateCheckoutRequest {
-   items: CheckoutItem[]; // The body should have an array of CheckoutItem
+   items: CheckoutItem[];
 }
 
-checkoutRouting.post("/create-checkout", async (req: Request<{}, {}, CreateCheckoutRequest>, res: Response) => {
+checkoutRouting.post("/create-checkout", async (req: Request, res: Response) => {
    try {
       const body = req.body;
       console.log(body);
@@ -32,36 +33,44 @@ checkoutRouting.post("/create-checkout", async (req: Request<{}, {}, CreateCheck
          data: {
             userId: +userId,
             orderItems: {
-               create: body.map((item) => ({
+               create: body.items.map((item: { [key: string]: number | string }) => ({
                   dishes: { connect: { id: item.dishId } },
                   quantity: item.quantity,
-                  price: item.price
+                  price: item.price,
                })),
-            }
+            },
          },
          include: {
-            orderItems: true
-         }
+            orderItems: true,
+         },
       });
-      if (!createCheckout) res.status(409).json({ success: false, message: "Checkout not created" });
-      const checkoutItems = createCheckout?.orderItems
+
+      if (!createCheckout) {
+         res.status(409).json({ success: false, message: "Checkout not created" });
+      }
+
+      const checkoutItems = createCheckout.orderItems;
       const totalAmount = checkoutItems.reduce((total, dish) => {
          return total + dish.price * dish.quantity;
       }, 0);
-      // update total amount
+
+      // Update total amount
       const updateCheckout = await prisma.order.update({
          where: { id: createCheckout.id },
          data: { totalAmount },
       });
-      if (!updateCheckout) res.status(409).json({ success: false, message: "Total amount not updated" });
+
+      if (!updateCheckout) {
+         res.status(409).json({ success: false, message: "Total amount not updated" });
+      }
 
       res.status(200).json({ success: true, orderId: createCheckout.cuid });
-      // res.status(200).json({ success: true })
    } catch (error) {
       console.error(error);
       res.status(500).json({ success: false, message: 'Internal Server Error', error });
    }
-});
+}
+);
 
 checkoutRouting.get("/checkout-details/:id", async (req, res) => {
    try {
