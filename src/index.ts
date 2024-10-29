@@ -26,7 +26,12 @@ process.on("uncaughtException", err => {
    process.exit(1)
 })
 // cors origin define
-app.use(cors({ credentials: true, origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001', 'https://flavour-haven.arupmaity.in'] }));
+app.use(cors(
+   {
+      origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
+      credentials: true,
+   }
+));
 app.use(express.json());
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true })) // parse application/x-www-form-urlencoded
@@ -52,7 +57,7 @@ app.use("/api/demo", demoRouting)
 
 const io = new Server(server, {
    cors: {
-      origin: "*",
+      origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
       methods: ["GET", "POST"]
    }
 });

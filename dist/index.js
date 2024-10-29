@@ -28,7 +28,10 @@ process.on("uncaughtException", err => {
     process.exit(1);
 });
 // cors origin define
-app.use((0, cors_1.default)({ credentials: true, origin: 'http://localhost:3001' }));
+app.use((0, cors_1.default)({
+    origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
+    credentials: true,
+}));
 app.use(express_1.default.json());
 app.use((0, cookie_parser_1.default)());
 app.use(body_parser_1.default.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded
@@ -49,7 +52,7 @@ app.use("/api/checkout", checkout_1.default);
 app.use("/api/demo", demo_controller_1.default);
 const io = new socket_io_1.Server(server, {
     cors: {
-        origin: "*",
+        origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
         methods: ["GET", "POST"]
     }
 });
@@ -104,6 +107,6 @@ io.on('connection', (socket) => {
         // io.emit('updateUserList', Object.values(users));
     });
 });
-server.listen(process.env.PORT || 8081, () => {
+server.listen(process.env.PORT || 8050, () => {
     console.log(`Port ${process.env.PORT}`);
 });
