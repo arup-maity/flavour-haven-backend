@@ -26,12 +26,12 @@ process.on("uncaughtException", err => {
    process.exit(1)
 })
 // cors origin define
-app.use(cors(
-   {
-      origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
-      credentials: true,
-   }
-));
+app.use(cors({
+   origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
+   credentials: true,
+   methods: ["GET", "POST", "PUT", "DELETE"], // Add any methods you want to allow
+   allowedHeaders: ["Content-Type", "Authorization"], // Specify allowed headers if necessary
+}));
 app.use(express.json());
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true })) // parse application/x-www-form-urlencoded
@@ -41,7 +41,7 @@ const server = http.createServer(app);
 
 // Routes
 app.get('/', (req, res) => {
-   res.send('Hello World!')
+   res.status(200).json({ success: true, allow_origin: process.env.ALLOWED_ORIGIN_WEB });
 });
 
 app.use('/api/auth', authRouting)
