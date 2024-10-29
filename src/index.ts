@@ -55,12 +55,12 @@ app.use("/api/checkout", checkoutRouting)
 // demo
 app.use("/api/demo", demoRouting)
 
-const io = new Server(server, {
-   cors: {
-      origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
-      methods: ["GET", "POST"]
-   }
-});
+// const io = new Server(server, {
+//    cors: {
+//       origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
+//       methods: ["GET", "POST"]
+//    }
+// });
 
 
 // io.on('connection', (socket) => {
@@ -78,48 +78,47 @@ const io = new Server(server, {
 
 let users: { [key: string]: any } = {};
 
-console.log('total user', users)
 // Socket.IO event listeners
-io.on('connection', (socket) => {
-   console.log('A user connected:', socket.id);
+// io.on('connection', (socket) => {
+//    console.log('A user connected:', socket.id);
 
-   // Store the username of connected users
-   socket.on('join', ({ username }) => {
-      users[username] = socket.id;
-      console.log(username)
-      io.emit('updateUserList', Object.keys(users));
-      console.log('Updated user list:', Object.keys(users));
-   });
+//    // Store the username of connected users
+//    socket.on('join', ({ username }) => {
+//       users[username] = socket.id;
+//       console.log(username)
+//       io.emit('updateUserList', Object.keys(users));
+//       console.log('Updated user list:', Object.keys(users));
+//    });
 
-   // Handle private messaging
-   socket.on('privateMessage', ({ recipientId, message }) => {
-      // console.log('Private message', recipientId, message,users[socket.id]);
-      // io.to(recipientId).emit('receiveMessage', { message, from: users[socket.id] });
-      const recipientSocketId = users[recipientId];  // Get recipient's socket ID
-      if (recipientSocketId) {
-         // Emit the message only to the recipient's socket
-         io.to(recipientSocketId).emit('receiveMessage', {
-            message,
-            from: recipientId
-         });
-         console.log(`Private message sent to ${recipientSocketId}`);
-      } else {
-         console.log(`User ${recipientSocketId} is not online.`);
-      }
-   });
+//    // Handle private messaging
+//    socket.on('privateMessage', ({ recipientId, message }) => {
+//       // console.log('Private message', recipientId, message,users[socket.id]);
+//       // io.to(recipientId).emit('receiveMessage', { message, from: users[socket.id] });
+//       const recipientSocketId = users[recipientId];  // Get recipient's socket ID
+//       if (recipientSocketId) {
+//          // Emit the message only to the recipient's socket
+//          io.to(recipientSocketId).emit('receiveMessage', {
+//             message,
+//             from: recipientId
+//          });
+//          console.log(`Private message sent to ${recipientSocketId}`);
+//       } else {
+//          console.log(`User ${recipientSocketId} is not online.`);
+//       }
+//    });
 
-   // Handle group messaging
-   socket.on('groupMessage', (message) => {
-      console.log('Received group message:', message)
-      io.emit('receiveGroupMessage', { message, from: users[socket.id] });
-   });
+//    // Handle group messaging
+//    socket.on('groupMessage', (message) => {
+//       console.log('Received group message:', message)
+//       io.emit('receiveGroupMessage', { message, from: users[socket.id] });
+//    });
 
-   socket.on('disconnect', () => {
-      console.log('User disconnected:', socket.id);
-      // delete users[socket.id];
-      // io.emit('updateUserList', Object.values(users));
-   });
-});
+//    socket.on('disconnect', () => {
+//       console.log('User disconnected:', socket.id);
+//       // delete users[socket.id];
+//       // io.emit('updateUserList', Object.values(users));
+//    });
+// });
 
 
 server.listen(process.env.PORT || 8050, () => {
