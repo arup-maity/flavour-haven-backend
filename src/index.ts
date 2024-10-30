@@ -27,7 +27,7 @@ process.on("uncaughtException", err => {
 })
 // cors origin define
 app.use(cors({
-   origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
+   origin: '*',
    credentials: true,
 }));
 app.use(express.json());
