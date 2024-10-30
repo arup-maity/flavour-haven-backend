@@ -27,8 +27,10 @@ process.on("uncaughtException", err => {
 })
 // cors origin define
 app.use(cors({
-   origin: '*',
+   origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, 'http://localhost:3001'],
+   allowedHeaders: ['Content-Type', 'Authorization'],
    credentials: true,
+   exposedHeaders: ['Content-Disposition'],
 }));
 app.use(express.json());
 app.use(cookieParser())
