@@ -25,6 +25,12 @@ process.on("uncaughtException", err => {
    console.log(`Error: ${err.message}`)
    process.exit(1)
 })
+
+app.use(express.json());
+app.use(cookieParser())
+app.use(bodyParser.urlencoded({ extended: true })) // parse application/x-www-form-urlencoded
+app.use(bodyParser.json()) // parse application/json
+
 // cors origin define
 app.use(cors({
    origin: [`${process.env.ALLOWED_ORIGIN_WEB}`],
@@ -32,10 +38,6 @@ app.use(cors({
    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept', 'X-Access-Token', 'X-Refresh-Token'],
    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
 }));
-app.use(express.json());
-app.use(cookieParser())
-app.use(bodyParser.urlencoded({ extended: true })) // parse application/x-www-form-urlencoded
-app.use(bodyParser.json()) // parse application/json
 
 const server = http.createServer(app);
 
@@ -121,6 +123,6 @@ let users: { [key: string]: any } = {};
 // });
 
 
-server.listen(process.env.PORT || 8050, () => {
+app.listen(process.env.PORT || 8050, () => {
    console.log(`Port ${process.env.PORT}`);
 });
