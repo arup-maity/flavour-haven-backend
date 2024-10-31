@@ -47,7 +47,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "A classic combination of deep-fried Poori, spiced potato curry, and a rich, flavorful chickpea curry.",
                "price": 115,
                "costPrice": 250,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Choley Kulcha (2 Pcs)",
@@ -56,7 +56,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Rich chickpea curry served with soft, stuffed Kulcha bread.",
                "price": 155,
                "costPrice": 250,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Bread Rolls (2 Pcs)",
@@ -65,7 +65,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Crispy stuffed bread rolls with a savory potato filling.",
                "price": 95,
                "costPrice": 200,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/099ef376-d047-4444-9d09-9fabc5c4d9e5.png"
             },
             {
                "title": "Bun Anda Shurjee",
@@ -74,7 +74,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Soft bun served with spiced scrambled eggs.",
                "price": 105,
                "costPrice": 200,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/e735b66b-c7a8-4e3b-896d-70ecc27e76a7.png"
             },
             {
                "title": "Bun Omlette Plain / with Cheese",
@@ -83,7 +83,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Fluffy omelette served in a bun, available plain or with cheese.",
                "price": 105,
                "costPrice": 155,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/df08a1e0-d9a9-433b-81ec-c27a3304fab2.png"
             },
             {
                "title": "Bun Masala Omlette Plain / with Cheese",
@@ -92,7 +92,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Spiced masala omelette served in a bun, available plain or with cheese.",
                "price": 115,
                "costPrice": 165,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/df08a1e0-d9a9-433b-81ec-c27a3304fab2.png"
             },
             {
                "title": "Parantha Egg Roll Plain / with Cheese",
@@ -101,7 +101,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Spiced egg omelette rolled inside a parantha, available plain or with cheese.",
                "price": 125,
                "costPrice": 175,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Masala Egg Sandwich Plain / with Cheese",
@@ -110,7 +110,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Spiced scrambled egg sandwich, available plain or with cheese.",
                "price": 155,
                "costPrice": 205,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Choley Chawal / Parantha (2 Pcs)",
@@ -119,7 +119,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Spicy chickpea curry served with your choice of rice or paranthas.",
                "price": 95,
                "costPrice": 200,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Dal Makhani Chawal / Parantha (2 Pcs)",
@@ -128,7 +128,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Creamy Dal Makhani served with your choice of rice or paranthas.",
                "price": 125,
                "costPrice": 250,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Paneer Makhani Chawal / Parantha (2 Pcs)",
@@ -137,7 +137,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Creamy Paneer Makhani served with your choice of rice or paranthas.",
                "price": 125,
                "costPrice": 250,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Chicken Makhani Chawal / Parantha (2 Pcs)",
@@ -146,7 +146,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Rich Chicken Makhani served with your choice of rice or paranthas.",
                "price": 145,
                "costPrice": 250,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Chicken Tikka Sandwich / With Cheese",
@@ -155,7 +155,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Grilled chicken tikka sandwich, available plain or with cheese.",
                "price": 285,
                "costPrice": 335,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Chicken Keema Sandwich / With Cheese",
@@ -164,7 +164,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Spiced minced chicken sandwich, available plain or with cheese.",
                "price": 285,
                "costPrice": 335,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Vada Pav Classic / Schezwan (2 Pcs)",
@@ -173,7 +173,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Spicy potato fritter in a bun, available in classic or Schezwan style.",
                "price": 95,
                "costPrice": 125,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Keema Pav (2 Pcs)",
@@ -182,7 +182,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Spiced minced chicken served with soft pav buns.",
                "price": 235,
                "costPrice": 250,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Bun Maska Classic / Grilled",
@@ -191,7 +191,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Soft bun with butter, available in classic or grilled style.",
                "price": 75,
                "costPrice": 105,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Bun Jam Maska Classic / Grilled",
@@ -200,7 +200,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Soft bun with butter and jam, available in classic or grilled style.",
                "price": 75,
                "costPrice": 105,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Bun Samosa Classic / Grilled / with Cheese",
@@ -209,7 +209,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Crispy samosa in a bun, available in classic, grilled, or with cheese.",
                "price": 95,
                "costPrice": 145,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Bun Masala Aloo Grill Classic / with Cheese",
@@ -218,7 +218,7 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Spiced mashed potatoes in a grilled bun, available in classic or with cheese.",
                "price": 125,
                "costPrice": 145,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             },
             {
                "title": "Bun Peri Peri Paneer Grill Classic / with Cheese",
@@ -227,10 +227,10 @@ demoRouting.post("/create-dish", async (req, res) => {
                "shortDescription": "Grilled peri peri paneer in a bun, available in classic or with cheese.",
                "price": 145,
                "costPrice": 165,
-               "thumbnail": "27a3cf7f-efa5-4182-997e-4ea245a246ca.jpg"
+               "thumbnail": "/dishes/f731939d-75af-4f0f-ba66-723e5a16fb7c.png"
             }
          ],
-         skipDuplicates: true, // Skip 'Bobo'
+         skipDuplicates: true,
       })
       res.status(200).json({ success: true, createMany })
    } catch (error) {

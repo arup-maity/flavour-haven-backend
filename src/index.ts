@@ -14,6 +14,7 @@ import publicDishesRouting from "./controllers/dishes-controllers/publicDishes"
 import publicTaxonomyRouting from "./controllers/taxonomy-controllers/taxonomy"
 import checkoutRouting from "./controllers/checkout-controllers/checkout"
 import demoRouting from "./controllers/demo-controller"
+import publicUserRouting from "./controllers/user-controllers/publicUser"
 // const { Server } = require("socket.io");
 
 
@@ -48,6 +49,7 @@ app.get('/', (req, res) => {
 
 app.use('/api/auth', authRouting)
 app.use('/api/admin/user', adminUserRouting)
+app.use('/api/user', publicUserRouting)
 app.use('/api/admin/taxonomy', adminTaxonomyRouting)
 app.use('/api/taxonomy', publicTaxonomyRouting)
 app.use('/api/admin/dishes', adminDishesRouting)
@@ -123,6 +125,6 @@ let users: { [key: string]: any } = {};
 // });
 
 
-app.listen(process.env.PORT || 8050, () => {
+server.listen(process.env.PORT || 8050, () => {
    console.log(`Port ${process.env.PORT}`);
 });
