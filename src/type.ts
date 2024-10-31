@@ -1,6 +1,4 @@
 // types.ts
-import { Request } from 'express';
-
 export interface TokenType {
    id: number,
    name: string,
