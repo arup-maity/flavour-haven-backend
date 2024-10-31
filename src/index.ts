@@ -26,7 +26,12 @@ process.on("uncaughtException", err => {
    process.exit(1)
 })
 // cors origin define
-app.use(cors());
+app.use(cors({
+   origin: [`${process.env.ALLOWED_ORIGIN_WEB}`],
+   credentials: true,
+   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept', 'X-Access-Token', 'X-Refresh-Token'],
+   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
+}));
 app.use(express.json());
 app.use(cookieParser())
 app.use(bodyParser.urlencoded({ extended: true })) // parse application/x-www-form-urlencoded
