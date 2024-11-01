@@ -15,6 +15,7 @@ import publicTaxonomyRouting from "./controllers/taxonomy-controllers/taxonomy"
 import checkoutRouting from "./controllers/checkout-controllers/checkout"
 import demoRouting from "./controllers/demo-controller"
 import publicUserRouting from "./controllers/user-controllers/publicUser"
+import adminOrdersRouting from "./controllers/order-controllers/adminOrders"
 // const { Server } = require("socket.io");
 
 
@@ -54,6 +55,9 @@ app.use('/api/admin/taxonomy', adminTaxonomyRouting)
 app.use('/api/taxonomy', publicTaxonomyRouting)
 app.use('/api/admin/dishes', adminDishesRouting)
 app.use('/api/dishes', publicDishesRouting)
+// order
+app.use('/api/admin/order', adminOrdersRouting)
+//
 app.use("/api/checkout", checkoutRouting)
 
 // demo
