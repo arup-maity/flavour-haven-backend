@@ -30,15 +30,14 @@ authRouting.get('/verify-token', async (req: Request, res: Response) => {
       };
 
       const token = cookieToken || getToken();
-      if (!token) res.status(409).json({ success: false, message: "No token provided" });
-
+      if (!token) return res.status(409).json({ success: false, message: "No token provided" });
       const decoded = jwt.verify(token, process.env.JWT_SECRET as string) as TokenType
-      if (decoded?.purpose !== 'login') res.status(401).json({ success: false, login: false, message: 'This token is not for login purposes' });
+      if (decoded?.purpose !== 'login') return res.status(401).json({ success: false, login: false, message: 'This token is not for login purposes' });
 
-      res.status(200).json({ success: true, login: true, decoded });
+      return res.status(200).json({ success: true, login: true, decoded });
    } catch (error) {
       console.error('verify token', error)
-      res.status(500).json({ success: false, message: "Failed to authenticate token" })
+      return res.status(500).json({ success: false, message: "Failed to authenticate token" })
    }
 })
 authRouting.post('/admin-login', validateData(adminLogin), async (req: Request, res: Response) => {

@@ -1,4 +1,4 @@
-import { Router, Request, Response, response } from 'express';
+import { Router, Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import prisma from '@/config/prisma';
 import { adminAuthentication } from '@/middleware';
@@ -11,7 +11,7 @@ adminUserRouting.post('/create-user', async (req: Request, res: Response) => {
       const findUser = await prisma.users.findUnique({
          where: { email: body.email }
       })
-      if (findUser) res.status(409).send({ success: false, message: "User already exists" })
+      if (findUser) return res.status(409).json({ success: false, message: "User already exists" })
       const hashPassword = bcrypt.hashSync(body.password, 16)
       const newUser = await prisma.users.create({
          data: {
@@ -27,10 +27,53 @@ adminUserRouting.post('/create-user', async (req: Request, res: Response) => {
             }
          }
       })
-      if (!newUser) res.status(409).json({ success: false, message: "Not create user" })
-      res.status(200).send({ success: true, message: `Successfully create user` });
+      if (!newUser) return res.status(409).json({ success: false, message: "Not create user" })
+      return res.status(200).json({ success: true, message: `Successfully create user` });
    } catch (error) {
-      res.status(500).send(error)
+      return res.status(500).json({ success: false, message: 'Server error', error })
+   }
+})
+adminUserRouting.put("/update-user/:id", async (req, res) => {
+   try {
+      const id = req.params.id;
+      const body = req.body;
+      const updateUser = await prisma.users.update({
+         where: { id: +id },
+         data: {
+            firstName: body.firstName,
+            lastName: body.lastName,
+            email: body.email,
+            role: body.role
+         }
+      })
+      if (!updateUser) return res.status(409).json({ success: false, message: "Not found user" })
+      return res.status(200).json({ success: true, message: `Successfully update user` });
+   } catch (error) {
+      return res.status(500).json({ success: false, message: 'Server error', error })
+   }
+})
+adminUserRouting.get('/read-user/:id', async (req: Request, res: Response) => {
+   try {
+      const id = req.params.id;
+      const user = await prisma.users.findUnique({
+         where: { id: +id }
+      })
+      if (!user) return res.status(409).json({ success: false, message: "Not found user" })
+      return res.status(200).json({ success: true, user });
+   } catch (error) {
+      return res.status(500).json({ success: false, message: 'Server error', error })
+   }
+})
+adminUserRouting.delete("/delete-user/:id", async (req: Request, res: Response) => {
+   try {
+      const id = req.params.id;
+      const deleteUser = await prisma.users.delete({
+         where: { id: +id }
+      })
+      if (!deleteUser) return res.status(409).json({ success: false, message: "Not found user" })
+      return res.status(200).json({ success: true, message: `Successfully delete user` });
+   } catch (error) {
+      return res.status(500).json({ success: false, message: 'Server error', error })
    }
 })
 interface ManagementsListQuery {
@@ -41,8 +84,15 @@ interface ManagementsListQuery {
    column?: string;
    sortOrder?: 'asc' | 'desc'; // Specify possible sort orders
 }
-
-adminUserRouting.get('/managements-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response) => {
+interface UserResponse {
+   success: boolean;
+   users?: any[];
+   filterCount?: number;
+   totalCount?: number;
+   message: string;
+   error?: any;
+}
+adminUserRouting.get('/managements-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response<UserResponse>) => {
    try {
       const { page = 1, limit = 25, search = '', role = "all", column = 'createdAt', sortOrder = 'desc' } = req.query
       const conditions: any = {}
@@ -55,6 +105,8 @@ adminUserRouting.get('/managements-list', async (req: Request<{}, {}, {}, Manage
       }
       if (role && role !== "all") {
          conditions.role = role
+      } else {
+         conditions.role = { not: "user" }
       }
       const query: any = {}
       if (column && sortOrder) {
@@ -70,9 +122,40 @@ adminUserRouting.get('/managements-list', async (req: Request<{}, {}, {}, Manage
          prisma.users.count({ where: conditions }),
          prisma.users.count(),
       ]);
-      res.status(200).json({ success: true, users, filterCount, totalCount, message: 'Successfully' })
+      return res.status(200).json({ success: true, users, filterCount, totalCount, message: 'Successfully' })
    } catch (error) {
-      res.status(500).json({ success: false, message: 'Something error', error })
+      return res.status(500).json({ success: false, message: 'Something error', error })
+   }
+})
+adminUserRouting.get('/customer-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response<UserResponse>) => {
+   try {
+      const { page = 1, limit = 25, search = '', column = 'createdAt', sortOrder = 'desc' } = req.query
+      const conditions: any = {}
+      conditions.role = "user"
+      if (search) {
+         conditions.OR = [
+            { email: { contains: search, mode: "insensitive" } },
+            { firstName: { contains: search, mode: "insensitive" } },
+            { lastName: { contains: search, mode: "insensitive" } },
+         ]
+      }
+      const query: any = {}
+      if (column && sortOrder) {
+         query.orderBy = { [column]: sortOrder }
+      }
+      const users = await prisma.users.findMany({
+         where: conditions,
+         take: +limit,
+         skip: (+page - 1) * +limit,
+         ...query,
+      })
+      const [filterCount, totalCount] = await Promise.all([
+         prisma.users.count({ where: conditions }),
+         prisma.users.count(),
+      ]);
+      return res.status(200).json({ success: true, users, filterCount, totalCount, message: 'Successfully' })
+   } catch (error) {
+      return res.status(500).json({ success: false, message: 'Something error', error })
    }
 })
 
