@@ -6,7 +6,14 @@ import { deleteFilesFromStore, dishesUpload, taxonomyUpload } from '@/config/fil
 const adminOrdersRouting = Router()
 adminOrdersRouting.use(adminAuthentication())
 
-adminOrdersRouting.get("/orders-list", async (req, res) => {
+interface OrderListType {
+   search?: string
+   column?: string
+   sortOrder?: 'asc' | 'desc';
+   page?: string,
+   limit?: string
+}
+adminOrdersRouting.get("/orders-list", async (req: Request<{}, {}, {}, OrderListType>, res): Promise<any> => {
    try {
       const { search, column = 'createdAt', sortOrder = 'desc', page = 1, limit = 15 } = req.query
       const conditions: any = {}
@@ -41,7 +48,7 @@ adminOrdersRouting.get("/orders-list", async (req, res) => {
       res.status(500).json({ success: false, error })
    }
 })
-adminOrdersRouting.get("/order-request", async (req, res) => {
+adminOrdersRouting.get("/order-request", async (req, res): Promise<any> => {
    try {
       const orders = await prisma.order.findMany({
          // where: { status: "pending" },
@@ -52,7 +59,7 @@ adminOrdersRouting.get("/order-request", async (req, res) => {
       res.status(500).json({ success: false, error })
    }
 })
-adminOrdersRouting.get("/read-order/:id", async (req, res) => {
+adminOrdersRouting.get("/read-order/:id", async (req, res): Promise<any> => {
    try {
       const id = req.params.id
       const order = await prisma.order.findUnique({
@@ -74,7 +81,7 @@ adminOrdersRouting.get("/read-order/:id", async (req, res) => {
       res.status(500).json({ success: false, error })
    }
 })
-adminOrdersRouting.put("/update-status/:id", async (req, res) => {
+adminOrdersRouting.put("/update-status/:id", async (req, res): Promise<any> => {
    try {
       const id = req.params.id
       const { status } = req.body

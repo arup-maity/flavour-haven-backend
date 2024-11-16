@@ -17,7 +17,7 @@ export function cookieParams() {
       domain: process.env.ENVIRONMENT === 'production' ? '.arupmaity.in' : 'localhost',
    };
 }
-authRouting.get('/verify-token', async (req: Request, res: Response) => {
+authRouting.get('/verify-token', async (req: Request, res: Response): Promise<any> => {
    try {
       const cookieToken = req.cookies.token;
 

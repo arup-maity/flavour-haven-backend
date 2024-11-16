@@ -5,7 +5,7 @@ import { adminAuthentication } from '@/middleware';
 
 const adminUserRouting = Router()
 adminUserRouting.use(adminAuthentication())
-adminUserRouting.post('/create-user', async (req: Request, res: Response) => {
+adminUserRouting.post('/create-user', async (req: Request, res: Response): Promise<any> => {
    try {
       const body = req.body;
       const findUser = await prisma.users.findUnique({
@@ -33,7 +33,7 @@ adminUserRouting.post('/create-user', async (req: Request, res: Response) => {
       return res.status(500).json({ success: false, message: 'Server error', error })
    }
 })
-adminUserRouting.put("/update-user/:id", async (req, res) => {
+adminUserRouting.put("/update-user/:id", async (req, res): Promise<any> => {
    try {
       const id = req.params.id;
       const body = req.body;
@@ -52,7 +52,7 @@ adminUserRouting.put("/update-user/:id", async (req, res) => {
       return res.status(500).json({ success: false, message: 'Server error', error })
    }
 })
-adminUserRouting.get('/read-user/:id', async (req: Request, res: Response) => {
+adminUserRouting.get('/read-user/:id', async (req: Request, res: Response): Promise<any> => {
    try {
       const id = req.params.id;
       const user = await prisma.users.findUnique({
@@ -64,7 +64,7 @@ adminUserRouting.get('/read-user/:id', async (req: Request, res: Response) => {
       return res.status(500).json({ success: false, message: 'Server error', error })
    }
 })
-adminUserRouting.delete("/delete-user/:id", async (req: Request, res: Response) => {
+adminUserRouting.delete("/delete-user/:id", async (req: Request, res: Response): Promise<any> => {
    try {
       const id = req.params.id;
       const deleteUser = await prisma.users.delete({
@@ -92,7 +92,7 @@ interface UserResponse {
    message: string;
    error?: any;
 }
-adminUserRouting.get('/managements-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response<UserResponse>) => {
+adminUserRouting.get('/managements-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response): Promise<any> => {
    try {
       const { page = 1, limit = 25, search = '', role = "all", column = 'createdAt', sortOrder = 'desc' } = req.query
       const conditions: any = {}
@@ -127,7 +127,7 @@ adminUserRouting.get('/managements-list', async (req: Request<{}, {}, {}, Manage
       return res.status(500).json({ success: false, message: 'Something error', error })
    }
 })
-adminUserRouting.get('/customer-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response<UserResponse>) => {
+adminUserRouting.get('/customer-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response): Promise<any> => {
    try {
       const { page = 1, limit = 25, search = '', column = 'createdAt', sortOrder = 'desc' } = req.query
       const conditions: any = {}
