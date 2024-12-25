@@ -22,18 +22,16 @@ interface CreateCheckoutRequest {
    items: CheckoutItem[];
 }
 
-checkoutRouting.post("/create-checkout", async (req: Request, res: Response) => {
+checkoutRouting.post("/create-checkout", userAuthentication(), async (req: Request, res: Response): Promise<any> => {
    try {
+      const user = req.user
       const body = req.body;
-      console.log(body);
-
-      const userId = 6;
 
       const createCheckout = await prisma.order.create({
          data: {
-            userId: +userId,
+            userId: +user.id,
             orderItems: {
-               create: body.items.map((item: { [key: string]: number | string }) => ({
+               create: body.map((item: { [key: string]: number | string }) => ({
                   dishes: { connect: { id: item.dishId } },
                   quantity: item.quantity,
                   price: item.price,
@@ -45,9 +43,7 @@ checkoutRouting.post("/create-checkout", async (req: Request, res: Response) => 
          },
       });
 
-      if (!createCheckout) {
-         res.status(409).json({ success: false, message: "Checkout not created" });
-      }
+      if (!createCheckout) return res.status(409).json({ success: false, message: "Checkout not created" });
 
       const checkoutItems = createCheckout.orderItems;
       const totalAmount = checkoutItems.reduce((total, dish) => {
@@ -64,15 +60,15 @@ checkoutRouting.post("/create-checkout", async (req: Request, res: Response) => 
          res.status(409).json({ success: false, message: "Total amount not updated" });
       }
 
-      res.status(200).json({ success: true, orderId: createCheckout.cuid });
+      return res.status(200).json({ success: true, checkoutId: createCheckout.cuid });
+      // return res.status(200).json({ success: true, message: 'Checkout updated successfully' })
    } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: 'Internal Server Error', error });
+      return res.status(500).json({ success: false, message: 'Internal Server Error', error });
    }
-}
-);
+});
 
-checkoutRouting.get("/checkout-details/:id", async (req, res) => {
+checkoutRouting.get("/checkout-details/:id", async (req, res): Promise<any> => {
    try {
       const orderId = req.params.id;
       const checkout = await prisma.order.findUnique({
@@ -85,11 +81,11 @@ checkoutRouting.get("/checkout-details/:id", async (req, res) => {
             }
          }
       })
-      if (!checkout) res.status(404).json({ success: false, message: 'Checkout not found' })
-      res.status(200).json({ success: true, checkout })
+      if (!checkout) return res.status(404).json({ success: false, message: 'Checkout not found' })
+      return res.status(200).json({ success: true, checkout })
    } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: 'Internal Server Error' })
+      return res.status(500).json({ success: false, message: 'Internal Server Error' })
    }
 })
 
@@ -131,3 +127,6 @@ checkoutRouting.get("/webhook", async (req, res) => {
 })
 
 export default checkoutRouting
+
+
+// http://localhost:3001/checkout?checkoutId=cm4f28yad00014oic9i58j8zt

@@ -38,5 +38,35 @@ publicTaxonomyRouting.get("/tab-menu", async (req: Request<{}, {}, {}, TabMenuQu
    }
 });
 
+publicTaxonomyRouting.get("/category-with-dishes/:slug", async (req, res): Promise<any> => {
+   try {
+      const { slug } = req.params
+      const { limit = 15 } = req.query
+      const taxonomyData = await prisma.taxonomy.findUnique({
+         where: {
+            slug: slug
+         },
+         include: {
+            dishes: {
+               take: +limit,
+               include: {
+                  dish: {
+                     select: {
+                        title: true,
+                        price: true,
+                        thumbnail: true,
+                        nonVeg: true
+                     }
+                  }
+               }
+            }
+         },
+      });
+
+      return res.status(200).json({ success: true, taxonomy: taxonomyData, message: 'Successfully done' })
+   } catch (error) {
+      return res.status(500).json({ success: false, message: "Internal Server Error" });
+   }
+})
 
 export default publicTaxonomyRouting
