@@ -49,17 +49,17 @@ demoRouting.post("/create-dish", async (req, res) => {
       res.status(500).json({ success: false, error })
    }
 })
-demoRouting.post("/create-category", async (req, res) => {
-   try {
-      const createMany = await prisma.taxonomy.createMany({
-         data: [...taxonomyList],
-         skipDuplicates: true,
-      })
-      res.status(200).json({ success: true, createMany })
-   } catch (error) {
-      console.log(error)
-      res.status(500).json({ success: false, error })
-   }
-})
+// demoRouting.post("/create-category", async (req, res) => {
+//    try {
+//       const createMany = await prisma.taxonomy.createMany({
+//          data: [...taxonomyList],
+//          skipDuplicates: true,
+//       })
+//       res.status(200).json({ success: true, createMany })
+//    } catch (error) {
+//       console.log(error)
+//       res.status(500).json({ success: false, error })
+//    }
+// })
 
 export default demoRouting

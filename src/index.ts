@@ -35,7 +35,7 @@ app.use(bodyParser.json()) // parse application/json
 
 // cors origin define
 app.use(cors({
-   origin: [`${process.env.ALLOWED_ORIGIN_WEB}`],
+   origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, "https://flavourhaven.vercel.app/", "https://flavour-haven.arupmaity.in/"],
    credentials: true,
    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Origin', 'Accept', 'X-Access-Token', 'X-Refresh-Token'],
    methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH']
