@@ -40,7 +40,7 @@ authRouting.get('/verify-token', async (req: Request, res: Response): Promise<an
       return res.status(500).json({ success: false, message: "Failed to authenticate token" })
    }
 })
-authRouting.post('/admin-login', validateData(adminLogin), async (req: Request, res: Response) => {
+authRouting.post('/admin-login', validateData(adminLogin), async (req: Request, res: Response): Promise<any> => {
    try {
       const body = req.body
       // find username
@@ -50,14 +50,14 @@ authRouting.post('/admin-login', validateData(adminLogin), async (req: Request, 
             userAuth: true
          }
       })
-      if (!findUser) res.status(409).send({ success: false, message: "User not found" })
+      if (!findUser) return res.status(409).send({ success: false, message: "User not found" })
       // check password
       const checkPassword = bcrypt.compareSync(body?.password, findUser?.userAuth?.password as string)
-      if (!checkPassword) res.status(409).send({ success: false, message: "Not match username and password" })
+      if (!checkPassword) return res.status(409).send({ success: false, message: "Not match username and password" })
       // 
       const payload = {
          id: findUser?.id,
-         name: findUser?.firstName ? findUser?.firstName + " " + findUser?.lastName : '',
+         name: `${findUser?.firstName} ${findUser?.lastName}`,
          role: findUser?.role,
          accessPurpose: 'admin',
          purpose: 'login',
@@ -72,10 +72,10 @@ authRouting.post('/admin-login', validateData(adminLogin), async (req: Request, 
          maxAge: 30 * 24 * 60 * 60 * 1000,
       })
       //  return response
-      res.status(200).send({ success: true, message: 'Login successfull' })
+      return res.status(200).send({ success: true, message: 'Login successfull' })
    } catch (error) {
       console.log(error)
-      res.status(500).send({ success: false, error })
+      return res.status(500).send({ success: false, error })
    }
 })
 authRouting.post("/user-register", async (req: Request, res: Response) => {
@@ -86,10 +86,8 @@ authRouting.post("/user-register", async (req: Request, res: Response) => {
          where: { email: body.email }
       });
       if (checkUser) res.status(409).json({ success: false, message: "User already exists" });
-
       // Hash the password
       const hashPassword = bcrypt.hashSync(body.password, 10); // Consider using a higher value for production
-
       // Create the new user
       const newUser = await prisma.users.create({
          data: {

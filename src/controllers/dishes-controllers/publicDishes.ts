@@ -6,23 +6,21 @@ const publicDishesRouting = Router()
 
 publicDishesRouting.get('/delivery-dishes', async (req, res) => {
    try {
-      const { sort = '', veg = false, page = 1, limit = 15 } = req.query
+      const { search = "", sortColumn = "createdAt", sortOrder = "desc", veg = "all", page = 1, limit = 15 } = req.query
       const conditions: any = {}
-      // if (search) {
-      //    conditions.title = {
-      //       contains: search,
-      //       mode: "insensitive"
-      //    }
-      // }
-
-      if (veg) {
-         conditions.veg = true
+      if (search) {
+         conditions.title = {
+            contains: search,
+            mode: "insensitive"
+         }
       }
-
+      if (veg !== "all") {
+         conditions.nonVeg = veg === "veg"
+      }
       const query: any = {};
-      // if (column && sortOrder) {
-      //    query.orderBy = { [column]: sortOrder }
-      // }
+      if (sortColumn && sortOrder) {
+         query.orderBy = { [sortColumn as string]: sortOrder }
+      }
 
       const dishes = await prisma.dishes.findMany({
          where: conditions,
@@ -98,6 +96,41 @@ publicDishesRouting.get("/dish-details/:slug", async (req, res) => {
    } catch (error) {
       console.log(error)
       res.status(500).json({ success: true, message: 'Internal Server Error' })
+   }
+})
+publicDishesRouting.get("/dishes-by-category/:categorySlug", async (req, res): Promise<any> => {
+   try {
+      const { categorySlug } = req.params
+      console.log('first')
+      const dishes = await prisma.dishes.findMany({
+         where: {
+            categories: {
+               some: {
+                  taxonomy: {
+                     slug: categorySlug
+                  }
+               }
+            }
+         },
+         select: {
+            id: true,
+            title: true,
+            price: true,
+            thumbnail: true,
+            nonVeg: true,
+            slug: true,
+
+         },
+         orderBy: {
+            createdAt: 'desc'
+         },
+         take: 6,
+         skip: 0
+      })
+      return res.status(200).json({ success: true, dishes })
+   } catch (error) {
+      console.log(error)
+      return res.status(500).json({ success: true, message: 'Internal Server Error' })
    }
 })
 

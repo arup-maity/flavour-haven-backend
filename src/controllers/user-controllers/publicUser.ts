@@ -71,6 +71,7 @@ publicUserRouting.put('/update-address/:id', async (req, res) => {
 publicUserRouting.get('/order-list', async (req, res) => {
    try {
       const userDetails = req.user;
+      const { search, page = "1", limit = "15", } = req.query as { search?: string; page?: string; limit?: string; };
 
       const orders = await prisma.order.findMany({
          where: { userId: +userDetails.id },
@@ -88,7 +89,9 @@ publicUserRouting.get('/order-list', async (req, res) => {
          },
          orderBy: {
             createdAt: 'desc'
-         }
+         },
+         take: parseInt(limit, 10),
+         skip: (parseInt(page, 10) - 1) * parseInt(limit, 10)
       })
       res.status(200).json({ success: true, orders })
    } catch (error) {

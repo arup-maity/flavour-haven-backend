@@ -92,7 +92,7 @@ interface UserResponse {
    message: string;
    error?: any;
 }
-adminUserRouting.get('/managements-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response): Promise<any> => {
+adminUserRouting.get('/user-list', async (req: Request<{}, {}, {}, ManagementsListQuery>, res: Response): Promise<any> => {
    try {
       const { page = 1, limit = 25, search = '', role = "all", column = 'createdAt', sortOrder = 'desc' } = req.query
       const conditions: any = {}

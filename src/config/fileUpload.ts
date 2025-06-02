@@ -5,11 +5,11 @@ import path from 'path'
 
 const s3 = new S3Client({
    credentials: {
-      accessKeyId: '005d5d9f1de0b510000000001',
-      secretAccessKey: 'K005RK2iG+mDeAd1+Vb2dWG7CCQAVjQ'
+      accessKeyId: process.env.S3_ACCESS_KEY,
+      secretAccessKey: process.env.S3_SECRET_KEY
    },
-   endpoint: 'https://s3.us-east-005.backblazeb2.com',
-   region: 'us-east-005',
+   endpoint: process.env.S3_END_POINT,
+   region: process.env.S3_REGION,
 });
 
 function sanitizeFileImage(file: any, cb: any) {
@@ -29,7 +29,7 @@ function sanitizeFileImage(file: any, cb: any) {
 // Taxonomy File Uploader
 const taxonomyStorage = multerS3({
    s3: s3, // s3 instance
-   bucket: 'coolify-database-backup', // change it as per your project requirement
+   bucket: process.env.S3_BUCKET, // change it as per your project requirement
    acl: 'public-read', // storage access type
    key: (req, file, cb) => {
       const folder = 'restaurent/taxonomy';
@@ -51,7 +51,7 @@ export const taxonomyUpload = multer({
 // Taxonomy File Uploader
 const dishesStorage = multerS3({
    s3: s3, // s3 instance
-   bucket: 'coolify-database-backup', // change it as per your project requirement
+   bucket: process.env.S3_BUCKET, // change it as per your project requirement
    acl: 'public-read', // storage access type
    key: (req, file, cb) => {
       const folder = 'restaurent/dishes';
@@ -66,7 +66,7 @@ export const dishesUpload = multer({
       sanitizeFileImage(file, cb);
    },
    limits: {
-      fileSize: 1000000, // max file size 1MB = 1000000 bytes
+      fileSize: 8000000, // max file size 1MB = 1000000 bytes
    },
 });
 
@@ -84,7 +84,7 @@ export async function deleteFilesFromStore(files: string[]): Promise<{ success: 
 
    // Define parameters for DeleteObjectsCommand
    const params = {
-      Bucket: 'coolify-database-backup',  // Change it as per your project requirement
+      Bucket: process.env.S3_BUCKET,  // Change it as per your project requirement
       Delete: {
          Objects: getKeys(files),          // Call helper function to get object keys
       },

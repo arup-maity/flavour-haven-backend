@@ -3,16 +3,16 @@ import prisma from '@/config/prisma';
 
 const publicTaxonomyRouting = Router()
 
-interface TabMenuQuery {
+interface TabMenuQueryType {
    categories?: string[]; // categories can be a single string or an array of strings
 }
-publicTaxonomyRouting.get("/tab-menu", async (req: Request<{}, {}, {}, TabMenuQuery>, res: Response) => {
+publicTaxonomyRouting.get("/tab-menu", async (req: Request<{}, {}, {}, TabMenuQueryType>, res: Response) => {
    try {
       const { categories } = req.query
       const tabMenu = await prisma.taxonomy.findMany({
          where: {
             slug: {
-               in: categories, // Apply filter if categoryArray is not empty
+               in: categories
             },
          },
          include: {
@@ -25,8 +25,9 @@ publicTaxonomyRouting.get("/tab-menu", async (req: Request<{}, {}, {}, TabMenuQu
                         thumbnail: true,
                         nonVeg: true
                      }
-                  }
-               }
+                  },
+               },
+
             }
          }
       });

@@ -6,13 +6,13 @@ import { deleteFilesFromStore, dishesUpload, taxonomyUpload } from '@/config/fil
 const adminDishesRouting = Router()
 adminDishesRouting.use(adminAuthentication())
 
-adminDishesRouting.post('/create-dish', async (req, res) => {
+adminDishesRouting.post('/create-dish', async (req, res): Promise<any> => {
    try {
       const { category, ...rest } = req.body
       const checkSlug = await prisma.dishes.findUnique({
          where: { slug: rest.slug }
       })
-      if (checkSlug) res.status(409).json({ success: false, message: "Dish slug already exists" })
+      if (checkSlug) return res.status(409).json({ success: false, message: "Dish slug already exists" })
       const dish = await prisma.dishes.create({
          data: {
             ...rest,
@@ -23,26 +23,37 @@ adminDishesRouting.post('/create-dish', async (req, res) => {
             }
          }
       })
-      if (!dish) res.status(409).json({ success: false, message: "Dish not created" })
-      res.status(200).json({ success: true, message: "Dish created successfully", dish })
+      if (!dish) return res.status(409).json({ success: false, message: "Dish not created" })
+      return res.status(200).json({ success: true, message: "Dish created successfully", dish })
    } catch (error) {
       console.log(error)
-      res.status(500).json({ success: false, message: 'Something went wrong', error })
+      return res.status(500).json({ success: false, message: 'Something went wrong', error })
    }
 })
-adminDishesRouting.put("/update-dish/:id", async (req, res) => {
+adminDishesRouting.put("/update-dish/:id", async (req, res): Promise<any> => {
    try {
       const id = req.params.id
-      const { category, oldCategory, oldThumbnail, ...rest } = req.body
+      const { category, oldThumbnail, ...rest } = req.body
+      // dish details
+      const dish = await prisma.dishes.findUnique({
+         where: { id: +id },
+         include: {
+            categories: true
+         }
+      })
+      if (!dish) return res.status(409).json({ success: false, message: "Dish not found" })
+      const oldCategory = dish?.categories.map((item: any) => item.taxonomyId) || []
       const newCategoryIds = category.filter((id: number) => !oldCategory.includes(id))
       const removedCategoryIds = oldCategory.filter((id: number) => !category.includes(id));
+      // check slug unique
       const checkSlug = await prisma.dishes.findUnique({
          where: {
             slug: rest.slug,
             NOT: { id: +id }
          }
       })
-      if (checkSlug) res.status(409).json({ success: false, message: "Slug already exists" })
+      if (checkSlug) return res.status(409).json({ success: false, message: "Slug already exists" })
+      // update dish
       const updateDish = await prisma.dishes.update({
          where: { id: +id },
          data: {
@@ -54,20 +65,21 @@ adminDishesRouting.put("/update-dish/:id", async (req, res) => {
             }
          }
       })
-
+      //  remove old categories
       await Promise.all(removedCategoryIds.map((taxonomyId: number) =>
          prisma.dishesTaxonomy.delete({
             where: { dishId_taxonomyId: { dishId: +id, taxonomyId } },
          })
       ));
 
-      if (!updateDish) res.status(409).json({ success: false, message: "Dish not updated" })
-      if (oldThumbnail !== '' && oldThumbnail !== rest.thumbnail) {
+      if (!updateDish) return res.status(409).json({ success: false, message: "Dish not updated" })
+      // delete old thumbnail
+      if (dish?.thumbnail !== '' && dish?.thumbnail !== rest.thumbnail) {
          // await deleteFile('restaurant', oldThumbnail)
       }
-      res.status(200).json({ success: true, message: "Dish updated successfully" })
+      return res.status(200).json({ success: true, message: "Dish updated successfully" })
    } catch (error) {
-      res.status(500).json({ success: false, message: 'Something went wrong', error })
+      return res.status(500).json({ success: false, message: 'Something went wrong', error })
    }
 })
 adminDishesRouting.get('/read-dish/:id', async (req, res) => {
@@ -150,12 +162,12 @@ adminDishesRouting.get('/all-dishes', async (req: Request<{}, {}, {}, Management
       res.status(500).json({ success: false, message: 'Error', error })
    }
 })
-adminDishesRouting.post('/thumbnail-upload', adminAuthentication(), dishesUpload.single('image'), async (req, res) => {
+adminDishesRouting.post('/thumbnail-upload', adminAuthentication(), dishesUpload.single('image'), async (req, res): Promise<any> => {
    try {
       const file = req.file
-      res.status(200).json({ success: true, message: 'Successfully uploaded', file })
+      return res.status(200).json({ success: true, message: 'Successfully uploaded', file })
    } catch (error) {
-      res.status(500).json({ success: false })
+      return res.status(500).json({ success: false })
    }
 })
 
