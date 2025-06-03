@@ -15,11 +15,21 @@ publicDishesRouting.get('/delivery-dishes', async (req, res) => {
          }
       }
       if (veg !== "all") {
-         conditions.nonVeg = veg === "veg"
+         conditions.nonVeg = veg !== "veg"
       }
       const query: any = {};
-      if (sortColumn && sortOrder) {
-         query.orderBy = { [sortColumn as string]: sortOrder }
+      // if (sortColumn && sortOrder) {
+      //    query.orderBy = { [sortColumn as string]: sortOrder }
+      // }
+
+
+      if (sortOrder) {
+         if (sortOrder === 'gth') {
+            query.orderBy = { price: 'desc' }
+         }
+         if (sortOrder === 'lth') {
+            query.orderBy = { price: 'asc' }
+         }
       }
 
       const dishes = await prisma.dishes.findMany({
@@ -44,7 +54,7 @@ publicDishesRouting.get('/delivery-dishes', async (req, res) => {
 })
 publicDishesRouting.get('/all-dishes', async (req, res) => {
    try {
-      const { sort = '', veg = false, page = 1, limit = 15 } = req.query
+      const { sortOrder = '', veg = 'all', page = 1, limit = 15 } = req.query
       console.log(req.query)
       const conditions: any = {}
       // if (search) {
@@ -54,13 +64,22 @@ publicDishesRouting.get('/all-dishes', async (req, res) => {
       //    }
       // }
 
-      if (veg) {
-         conditions.veg = true
+      if (veg !== "all") {
+         conditions.veg = veg !== 'veg'
       }
 
       const query: any = {};
       // if (column && sortOrder) {
       //    query.orderBy = { [column]: sortOrder }
+      // }
+
+      // if (sortOrder) {
+      //    if (sortOrder === 'gth') {
+      //       query.orderBy = { price: 'desc' }
+      //    }
+      //    if (sortOrder === 'lth') {
+      //       query.orderBy = { price: 'asc' }
+      //    }
       // }
 
       const dishes = await prisma.dishes.findMany({
@@ -101,7 +120,6 @@ publicDishesRouting.get("/dish-details/:slug", async (req, res) => {
 publicDishesRouting.get("/dishes-by-category/:categorySlug", async (req, res): Promise<any> => {
    try {
       const { categorySlug } = req.params
-      console.log('first')
       const dishes = await prisma.dishes.findMany({
          where: {
             categories: {
