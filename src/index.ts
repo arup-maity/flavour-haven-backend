@@ -16,6 +16,7 @@ import checkoutRouting from "./controllers/checkout-controllers/checkout";
 import demoRouting from "./controllers/demo-controller";
 import publicUserRouting from "./controllers/user-controllers/publicUser";
 import adminOrdersRouting from "./controllers/order-controllers/adminOrders";
+import adminDishesRoutingV2 from "./modules/dish-module/admin-dish.controller";
 // const { Server } = require("socket.io");
 
 const app = express();
@@ -35,7 +36,12 @@ app.use(bodyParser.json()); // parse application/json
 // cors origin define
 app.use(
    cors({
-      origin: [`${process.env.ALLOWED_ORIGIN_WEB}`, "https://flavourhaven.vercel.app/", "https://flavour-haven.arupmaity.in", "http://localhost:3001"],
+      origin: [
+         `${process.env.ALLOWED_ORIGIN_WEB}`,
+         "https://flavourhaven.vercel.app/",
+         "https://flavour-haven.arupmaity.in",
+         "http://localhost:3001",
+      ],
       credentials: true,
       allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Origin", "Accept", "X-Access-Token", "X-Refresh-Token"],
       methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
@@ -54,7 +60,7 @@ app.use("/api/admin/user", adminUserRouting);
 app.use("/api/user", publicUserRouting);
 app.use("/api/admin/taxonomy", adminTaxonomyRouting);
 app.use("/api/taxonomy", publicTaxonomyRouting);
-app.use("/api/admin/dishes", adminDishesRouting);
+// app.use("/api/admin/dishes", adminDishesRouting);
 app.use("/api/dishes", publicDishesRouting);
 // order
 app.use("/api/admin/order", adminOrdersRouting);
@@ -63,6 +69,9 @@ app.use("/api/checkout", checkoutRouting);
 
 // demo
 app.use("/api/demo", demoRouting);
+
+// v2
+app.use("/api/admin/dish-service", adminDishesRoutingV2);
 
 // const io = new Server(server, {
 //    cors: {
