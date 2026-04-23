@@ -240,7 +240,7 @@ export const getAllDishes = asyncHandler(async (req: Request<{}, {}, {}, GetAllD
       return;
    }
 
-   res.status(200).send({ success: true, dishes, total: count });
+   res.status(200).send({ success: true, data: dishes, pagination: { total: count } });
 });
 
 export const uploadThumbnail = asyncHandler(async (req: Request, res: Response): Promise<void> => {

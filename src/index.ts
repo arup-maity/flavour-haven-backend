@@ -28,10 +28,10 @@ process.on("uncaughtException", (err) => {
    process.exit(1);
 });
 
-app.use(express.json());
+app.use(express.json({ limit: "10mb" }));
 app.use(cookieParser());
-app.use(bodyParser.urlencoded({ extended: true })); // parse application/x-www-form-urlencoded
-app.use(bodyParser.json()); // parse application/json
+app.use(bodyParser.urlencoded({ extended: true, limit: "10mb" })); // parse application/x-www-form-urlencoded
+app.use(bodyParser.json({ limit: "10mb" })); // parse application/json
 
 // cors origin define
 app.use(
@@ -60,7 +60,7 @@ app.use("/api/admin/user", adminUserRouting);
 app.use("/api/user", publicUserRouting);
 app.use("/api/admin/taxonomy", adminTaxonomyRouting);
 app.use("/api/taxonomy", publicTaxonomyRouting);
-// app.use("/api/admin/dishes", adminDishesRouting);
+app.use("/api/admin/dishes", adminDishesRouting);
 app.use("/api/dishes", publicDishesRouting);
 // order
 app.use("/api/admin/order", adminOrdersRouting);

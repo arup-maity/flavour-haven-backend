@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken'
 
 import { Request, Response, NextFunction } from "express";
 import { TokenType } from '@/type';
+export * from './validation.middleware';
 export const adminAuthentication = () => {
    return (req: Request, res: Response, next: NextFunction) => {
       try {
