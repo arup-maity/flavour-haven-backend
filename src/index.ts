@@ -16,7 +16,18 @@ import checkoutRouting from "./controllers/checkout-controllers/checkout";
 import demoRouting from "./controllers/demo-controller";
 import publicUserRouting from "./controllers/user-controllers/publicUser";
 import adminOrdersRouting from "./controllers/order-controllers/adminOrders";
+
+// V2 Module Routes
+import authRoutingV2 from "./modules/auth-module/auth.controller";
+import adminUserRoutingV2 from "./modules/user-module/admin-user.controller";
+import publicUserRoutingV2 from "./modules/user-module/public-user.controller";
+import adminTaxonomyRoutingV2 from "./modules/taxonomy-module/admin-taxonomy.controller";
+import publicTaxonomyRoutingV2 from "./modules/taxonomy-module/public-taxonomy.controller";
+import adminOrdersRoutingV2 from "./modules/order-module/admin-order.controller";
+import checkoutRoutingV2 from "./modules/checkout-module/checkout.controller";
+import demoRoutingV2 from "./modules/demo-module/demo.controller";
 import adminDishesRoutingV2 from "./modules/dish-module/admin-dish.controller";
+import publicDishesRoutingV2 from "./modules/dish-module/public-dish.controller";
 // const { Server } = require("socket.io");
 
 const app = express();
@@ -55,6 +66,7 @@ app.get("/", (req, res) => {
    res.status(200).json({ success: true, allow_origin: process.env.ALLOWED_ORIGIN_WEB });
 });
 
+// V1 Routes (Legacy)
 app.use("/api/auth", authRouting);
 app.use("/api/admin/user", adminUserRouting);
 app.use("/api/user", publicUserRouting);
@@ -70,8 +82,17 @@ app.use("/api/checkout", checkoutRouting);
 // demo
 app.use("/api/demo", demoRouting);
 
-// v2
-app.use("/api/admin/dish-service", adminDishesRoutingV2);
+// V2 Routes (New Module Pattern) - These will override V1 routes
+app.use("/api/auth", authRoutingV2);
+app.use("/api/admin/user", adminUserRoutingV2);
+app.use("/api/user", publicUserRoutingV2);
+app.use("/api/admin/taxonomy", adminTaxonomyRoutingV2);
+app.use("/api/taxonomy", publicTaxonomyRoutingV2);
+app.use("/api/admin/order", adminOrdersRoutingV2);
+app.use("/api/checkout", checkoutRoutingV2);
+app.use("/api/demo", demoRoutingV2);
+app.use("/api/admin/dishes", adminDishesRoutingV2);
+app.use("/api/dishes", publicDishesRoutingV2);
 
 // const io = new Server(server, {
 //    cors: {
